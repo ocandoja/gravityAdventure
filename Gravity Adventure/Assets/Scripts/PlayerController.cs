@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     // Player movement variables
     public float jumpForce = 6f;
+    public float runnigSpeed = 2f;
     Rigidbody2D rigidBody;
     //Animation variable to change the state
     Animator animator;
@@ -42,15 +43,20 @@ public class PlayerController : MonoBehaviour
             rigidBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
     }
+    void FixedUpdate() {
+        if(rigidBody.velocity.x < runnigSpeed){
+            rigidBody.velocity = new Vector2(runnigSpeed, rigidBody.velocity.y);
+        }
+    }
     //Know if the character is touching the ground
     bool isItGrounded(){
         if(Physics2D.Raycast(this.transform.position, Vector2.down, 1.4f, groundMask)){
             //Create logic of contact to the floor
-            animator.enabled = true;
+            // animator.enabled = true;
             return true;
         }else{
             //Create logic of not contact to the floor
-            animator.enabled = false;
+            // animator.enabled = false;
             return false;
         }
     }
