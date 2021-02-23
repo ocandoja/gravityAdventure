@@ -29,35 +29,40 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+        if (Input.GetButtonDown("Jump"))
         {
             Jump();
         }
         animator.SetBool(STATE_ON_THE_GROUND, isItGrounded());
-
         Debug.DrawRay(this.transform.position, Vector2.down * 1.5f, Color.blue);
     }
     
     void Jump(){
-        if(isItGrounded()){
-            rigidBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        if(GameManager.sharedInstance.currentGameState == GameState.inGame){
+            if(isItGrounded()){
+                rigidBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            }
         }
     }
     void FixedUpdate() {
-        if(rigidBody.velocity.x < runnigSpeed){
-            rigidBody.velocity = new Vector2(runnigSpeed, rigidBody.velocity.y);
+        if(GameManager.sharedInstance.currentGameState == GameState.inGame){
+            if(rigidBody.velocity.x < runnigSpeed){
+                rigidBody.velocity = new Vector2(runnigSpeed, rigidBody.velocity.y);
+            }
+        }else{//if we are not in game
+            rigidBody.velocity = new Vector2(0, rigidBody.velocity.y);
         }
     }
     //Know if the character is touching the ground
     bool isItGrounded(){
         if(Physics2D.Raycast(this.transform.position, Vector2.down, 1.4f, groundMask)){
-            //Create logic of contact to the floor
-            // animator.enabled = true;
             return true;
         }else{
-            //Create logic of not contact to the floor
-            // animator.enabled = false;
             return false;
         }
+    }
+    public void Die(){
+        this.animator.SetBool(STATE_ALIVE, false);
+        GameManager.sharedInstance.GameOver();
     }
 }
