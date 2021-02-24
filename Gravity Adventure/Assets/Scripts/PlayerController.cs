@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rigidBody;
     //Animation variable to change the state
     Animator animator;
+    Vector3 startPosition;
     private const string STATE_ALIVE = "isAlive";
     private const string STATE_ON_THE_GROUND = "isGrounded";
     //Using layers to identify the floor
@@ -22,10 +23,18 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        startPosition = this.transform.position;
+    }
+    public void StartGame() {
         animator.SetBool(STATE_ALIVE, true);
         animator.SetBool(STATE_ON_THE_GROUND, true);
+        Invoke("RestartPosition", 0.3f);
     }
-
+    //Restare position and holder
+    void RestartPosition(){
+        this.transform.position = startPosition;
+        this.rigidBody.velocity = Vector2.zero;
+    }
     // Update is called once per frame
     void Update()
     {
