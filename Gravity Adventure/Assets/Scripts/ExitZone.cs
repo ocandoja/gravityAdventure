@@ -16,6 +16,9 @@ public class ExitZone : MonoBehaviour
         
     }
     private void OnTriggerEnter2D(Collider2D other) {
-        //TODO: 
+        if(other.tag == "Player"){
+            LevelManager.sharedInstance.AddLevelBlock();
+            LevelManager.sharedInstance.RemoveLevelBlock();
+        }
     }
 }

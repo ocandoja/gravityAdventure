@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
             //menu logic
         }else if(newGameState == GameState.inGame){
             //preparate scene
+            LevelManager.sharedInstance.RemoveAllLevelBlocks();
+            LevelManager.sharedInstance.GenerateInitialBlocks();
             controller.StartGame();
         }else if(newGameState == GameState.gameOver){
             //game over
