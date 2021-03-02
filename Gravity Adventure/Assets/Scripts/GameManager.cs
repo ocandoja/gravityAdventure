@@ -3,59 +3,77 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Create an enumeration to save the game states
-public enum GameState{
-    menu,
-    inGame,
-    gameOver
+public enum GameState
+{
+  menu,
+  inGame,
+  gameOver
 }
 
 public class GameManager : MonoBehaviour
 {
-    public GameState currentGameState = GameState.menu;
-    // Singleton
-    public static GameManager sharedInstance;
-    private PlayerController controller;
-    private void Awake() {
-        if(sharedInstance == null){
-            sharedInstance = this;
-        }
-    }
-    // Start is called before the first frame update
-    void Start()
+  public GameState currentGameState = GameState.menu;
+  // Singleton
+  public static GameManager sharedInstance;
+  private PlayerController controller;
+  public int collectedObjects = 0;
+  private void Awake()
+  {
+    if (sharedInstance == null)
     {
-       controller = GameObject.Find("Character").GetComponent<PlayerController>();
+      sharedInstance = this;
     }
+  }
+  // Start is called before the first frame update
+  void Start()
+  {
+    controller = GameObject.Find("Character").GetComponent<PlayerController>();
+  }
 
-    // Update is called once per frame
-    void Update()
+  // Update is called once per frame
+  void Update()
+  {
+    if (Input.GetButtonDown("Submit") && currentGameState != GameState.inGame)
     {
-        if(Input.GetButtonDown("Submit") && currentGameState != GameState.inGame){
-            StartGame();
-        }
+      StartGame();
     }
-    public void StartGame(){
-        SetGameState(GameState.inGame);
+  }
+  public void StartGame()
+  {
+    SetGameState(GameState.inGame);
+  }
+  public void GameOver()
+  {
+    SetGameState(GameState.gameOver);
+  }
+  public void BackToMenu()
+  {
+    SetGameState(GameState.menu);
+  }
+  private void SetGameState(GameState newGameState)
+  {
+    if (newGameState == GameState.menu)
+    {
+      //menu logic
+      MenuManager.sharedInstance.ShowMainMenu();
     }
-    public void GameOver(){
-        SetGameState(GameState.gameOver);
+    else if (newGameState == GameState.inGame)
+    {
+      //preparate scene
+      LevelManager.sharedInstance.RemoveAllLevelBlocks();
+      LevelManager.sharedInstance.GenerateInitialBlocks();
+      controller.StartGame();
+      MenuManager.sharedInstance.HideMainMenu();
     }
-    public void BackToMenu(){
-        SetGameState(GameState.menu);
+    else if (newGameState == GameState.gameOver)
+    {
+      //game over
+      MenuManager.sharedInstance.ShowMainMenu();
     }
-    private void SetGameState(GameState newGameState){
-        if(newGameState == GameState.menu){
-            //menu logic
-            MenuManager.sharedInstance.ShowMainMenu();
-        }else if(newGameState == GameState.inGame){
-            //preparate scene
-            LevelManager.sharedInstance.RemoveAllLevelBlocks();
-            LevelManager.sharedInstance.GenerateInitialBlocks();
-            controller.StartGame();
-            MenuManager.sharedInstance.HideMainMenu();
-        }else if(newGameState == GameState.gameOver){
-            //game over
-            MenuManager.sharedInstance.ShowMainMenu();
-        }
-        this.currentGameState = newGameState;
-    }
+    this.currentGameState = newGameState;
+  }
+  public void CollectObject(Collectable collectable)
+  {
+    collectedObjects += collectable.value;
+  }
 }
