@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
   // Player movement variables
   public float jumpForce = 6f;
-  public float runnigSpeed = 2f;
+  public float runningSpeed = 2f;
   Rigidbody2D rigidBody;
   //Animation variable to change the state
   Animator animator;
@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
   public const int INITIAL_HEALTH = 100, INITIAL_MANA = 15,
                     MAX_HEALTH = 200, MAX_MANA = 30,
                     MIN_HEALTH = 10, MIN_MANA = 0;
+  public const int SUPERJUMP_COST = 5;
+  public const float SUPERJUMP_FORCE = 1.5F;
   //Using layers to identify the floor
   public LayerMask groundMask;
   //Getting the variables on the awake
@@ -51,19 +53,29 @@ public class PlayerController : MonoBehaviour
   {
     if (Input.GetButtonDown("Jump"))
     {
-      Jump();
+      Jump(false);
+    }
+    if (Input.GetButton("Super Jump"))
+    {
+      Jump(true);
     }
     animator.SetBool(STATE_ON_THE_GROUND, isItGrounded());
     Debug.DrawRay(this.transform.position, Vector2.down * 1.5f, Color.blue);
   }
 
-  void Jump()
+  void Jump(bool superjump)
   {
+    float jumpForceFactor = jumpForce;
+    if (superjump && manaPoints >= SUPERJUMP_COST)
+    {
+      manaPoints -= SUPERJUMP_COST;
+      jumpForceFactor *= SUPERJUMP_FORCE;
+    }
     if (GameManager.sharedInstance.currentGameState == GameState.inGame)
     {
       if (isItGrounded())
       {
-        rigidBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        rigidBody.AddForce(Vector2.up * jumpForceFactor, ForceMode2D.Impulse);
       }
     }
   }
@@ -71,9 +83,9 @@ public class PlayerController : MonoBehaviour
   {
     if (GameManager.sharedInstance.currentGameState == GameState.inGame)
     {
-      if (rigidBody.velocity.x < runnigSpeed)
+      if (rigidBody.velocity.x < runningSpeed)
       {
-        rigidBody.velocity = new Vector2(runnigSpeed, rigidBody.velocity.y);
+        rigidBody.velocity = new Vector2(runningSpeed, rigidBody.velocity.y);
       }
     }
     else
@@ -95,6 +107,14 @@ public class PlayerController : MonoBehaviour
   }
   public void Die()
   {
+    // Max score saved methood
+    float travelledDistance = GetTravelledDistance();
+    float previousMaxDistance = PlayerPrefs.GetFloat("maxscore", 2f);
+    if (travelledDistance > previousMaxDistance)
+    {
+      PlayerPrefs.SetFloat("maxscore", travelledDistance);
+    }
+    //
     this.animator.SetBool(STATE_ALIVE, false);
     GameManager.sharedInstance.GameOver();
   }
@@ -108,7 +128,7 @@ public class PlayerController : MonoBehaviour
   }
   public void CollectMana(int points)
   {
-    this.manaPoints = points;
+    this.manaPoints += points;
     if (this.manaPoints >= MAX_MANA)
     {
       this.manaPoints = MAX_MANA;
@@ -121,5 +141,9 @@ public class PlayerController : MonoBehaviour
   public int GetMana()
   {
     return manaPoints;
+  }
+  public float GetTravelledDistance()
+  {
+    return this.transform.position.x - startPosition.x;
   }
 }

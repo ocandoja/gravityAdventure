@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
   // Start is called before the first frame update
   void Start()
   {
-    controller = GameObject.Find("Character").GetComponent<PlayerController>();
+    controller = GameObject.Find("Player").GetComponent<PlayerController>();
   }
 
   // Update is called once per frame
@@ -56,6 +56,8 @@ public class GameManager : MonoBehaviour
     {
       //menu logic
       MenuManager.sharedInstance.ShowMainMenu();
+      MenuManager.sharedInstance.HideGameMenu();
+      MenuManager.sharedInstance.HideGameOverMenu();
     }
     else if (newGameState == GameState.inGame)
     {
@@ -64,11 +66,15 @@ public class GameManager : MonoBehaviour
       LevelManager.sharedInstance.GenerateInitialBlocks();
       controller.StartGame();
       MenuManager.sharedInstance.HideMainMenu();
+      MenuManager.sharedInstance.ShowGameMenu();
+      MenuManager.sharedInstance.HideGameOverMenu();
     }
     else if (newGameState == GameState.gameOver)
     {
       //game over
-      MenuManager.sharedInstance.ShowMainMenu();
+      MenuManager.sharedInstance.HideMainMenu();
+      MenuManager.sharedInstance.HideGameMenu();
+      MenuManager.sharedInstance.ShowGameOverMenu();
     }
     this.currentGameState = newGameState;
   }
