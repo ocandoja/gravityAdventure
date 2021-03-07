@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
   public void StartGame()
   {
     SetGameState(GameState.inGame);
+    GetComponent<AudioSource>().Play();
   }
   public void GameOver()
   {

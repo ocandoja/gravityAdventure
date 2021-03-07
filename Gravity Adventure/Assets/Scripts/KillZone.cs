@@ -4,27 +4,28 @@ using UnityEngine;
 
 public class KillZone : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+  // Start is called before the first frame update
+  void Start()
+  {
 
-    // Update is called once per frame
-    void Update()
+  }
+
+  // Update is called once per frame
+  void Update()
+  {
+
+  }
+  /// <summary>
+  /// Sent when another object enters a trigger collider attached to this
+  /// object (2D physics only).
+  /// </summary>
+  /// <param name="other">The other Collider2D involved in this collision.</param>
+  void OnTriggerEnter2D(Collider2D other)
+  {
+    if (other.tag == "Player")
     {
-        
+      PlayerController controller = other.GetComponent<PlayerController>();
+      controller.Die();
     }
-    /// <summary>
-    /// Sent when another object enters a trigger collider attached to this
-    /// object (2D physics only).
-    /// </summary>
-    /// <param name="other">The other Collider2D involved in this collision.</param>
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if(other.tag == "Player"){
-            PlayerController controller = other.GetComponent<PlayerController>();
-            controller.Die();
-        }
-    }
+  }
 }

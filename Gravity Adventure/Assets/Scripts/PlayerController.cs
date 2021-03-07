@@ -13,12 +13,14 @@ public class PlayerController : MonoBehaviour
   Vector3 startPosition;
   private const string STATE_ALIVE = "isAlive";
   private const string STATE_ON_THE_GROUND = "isGrounded";
+  [SerializeField]
   private int healthPoints, manaPoints;
   public const int INITIAL_HEALTH = 100, INITIAL_MANA = 15,
                     MAX_HEALTH = 200, MAX_MANA = 30,
                     MIN_HEALTH = 10, MIN_MANA = 0;
   public const int SUPERJUMP_COST = 5;
   public const float SUPERJUMP_FORCE = 1.5F;
+  public float jumpRaycastDistance = 1.5f;
   //Using layers to identify the floor
   public LayerMask groundMask;
   //Getting the variables on the awake
@@ -60,7 +62,7 @@ public class PlayerController : MonoBehaviour
       Jump(true);
     }
     animator.SetBool(STATE_ON_THE_GROUND, isItGrounded());
-    Debug.DrawRay(this.transform.position, Vector2.down * 1.5f, Color.blue);
+    Debug.DrawRay(this.transform.position, Vector2.down * jumpRaycastDistance, Color.blue);
   }
 
   void Jump(bool superjump)
@@ -75,6 +77,7 @@ public class PlayerController : MonoBehaviour
     {
       if (isItGrounded())
       {
+        GetComponent<AudioSource>().Play();
         rigidBody.AddForce(Vector2.up * jumpForceFactor, ForceMode2D.Impulse);
       }
     }
@@ -96,7 +99,7 @@ public class PlayerController : MonoBehaviour
   //Know if the character is touching the ground
   bool isItGrounded()
   {
-    if (Physics2D.Raycast(this.transform.position, Vector2.down, 1.4f, groundMask))
+    if (Physics2D.Raycast(this.transform.position, Vector2.down, jumpRaycastDistance, groundMask))
     {
       return true;
     }
@@ -114,7 +117,6 @@ public class PlayerController : MonoBehaviour
     {
       PlayerPrefs.SetFloat("maxscore", travelledDistance);
     }
-    //
     this.animator.SetBool(STATE_ALIVE, false);
     GameManager.sharedInstance.GameOver();
   }
@@ -124,6 +126,10 @@ public class PlayerController : MonoBehaviour
     if (this.healthPoints >= MAX_HEALTH)
     {
       this.healthPoints = MAX_HEALTH;
+    }
+    if (this.healthPoints <= 0)
+    {
+      Die();
     }
   }
   public void CollectMana(int points)

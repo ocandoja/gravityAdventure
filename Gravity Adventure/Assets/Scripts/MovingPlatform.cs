@@ -9,9 +9,9 @@ public class MovingPlatform : MonoBehaviour
   /// object (2D physics only).
   /// </summary>
   /// <param name="other">The other Collider2D involved in this collision.</param>
-  void OnTriggerEnter2D(Collider2D other)
+  private void OnTriggerEnter2D(Collider2D collision)
   {
-    Animator animator = GetComponent<Animator>();
-    animator.enabled = true;
+      Animator animator = GetComponent<Animator>();
+      animator.enabled = true;
   }
 }
